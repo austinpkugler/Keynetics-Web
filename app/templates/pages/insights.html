@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="row mt-3">
+    <div class="col-md-12 text-center">
+      <img src="/durations-plot.png" alt="Duration of Completed Jobs">
+    </div>
+  </div>
+
+  <div class="row mt-3">
+    <div class="col-md-12 text-center">
+      <img src="/status-plot.png" alt="Status of Jobs">
+      <img src="/config-plot.png" alt="Jobs by Configuration">
+    </div>
+  </div>
+
+  <div class="row justify-content-center mt-3">
+    <div class="col-auto">
+      <h2 class="text-center">Efficiency</h2>
+      <table class="table table-dark table-responsive">
+        <thead>
+          <tr>
+            <th scope="col">Status</th>
+            <th scope="col">Count</th>
+            <th scope="col">Rate</th>
+            <th scope="col">Median (m)</th>
+            <th scope="col">Mean (m)</th>
+            <th scope="col">Std. Dev. (m)</th>
+            <th scope="col">Best (m)</th>
+            <th scope="col">Worst (m)</th>
+            <th scope="col">Total (h)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Started</td>
+            <td class="text-right">{{ analytics['started_jobs'] }}</td>
+            <td class="text-right">{{ analytics['started_jobs_rate'] }}%</td>
+            <td class="text-right">-</td>
+            <td class="text-right">-</td>
+            <td class="text-right">-</td>
+            <td class="text-right">-</td>
+            <td class="text-right">-</td>
+            <td class="text-right">-</td>
+          </tr>
+          <tr>
+            <td>Finished</td>
+            <td class="text-right">{{ analytics['finished_jobs'] }}</td>
+            <td class="text-right">{{ analytics['finished_jobs_rate'] }}%</td>
+            <td class="text-right">{{ analytics['finished_jobs_median'] }}</td>
+            <td class="text-right">{{ analytics['finished_jobs_mean'] }}</td>
+            <td class="text-right">{{ analytics['finished_jobs_std_dev'] }}</td>
+            <td class="text-right">{{ analytics['finished_jobs_min'] }}</td>
+            <td class="text-right">{{ analytics['finished_jobs_max'] }}</td>
+            <td class="text-right">{{ analytics['finished_jobs_duration'] }}</td>
+          </tr>
+          <tr>
+            <td>Stopped</td>
+            <td class="text-right">{{ analytics['stopped_jobs'] }}</td>
+            <td class="text-right">{{ analytics['stopped_jobs_rate'] }}%</td>
+            <td class="text-right">{{ analytics['stopped_jobs_median'] }}</td>
+            <td class="text-right">{{ analytics['stopped_jobs_mean'] }}</td>
+            <td class="text-right">{{ analytics['stopped_jobs_std_dev'] }}</td>
+            <td class="text-right">{{ analytics['stopped_jobs_min'] }}</td>
+            <td class="text-right">{{ analytics['stopped_jobs_max'] }}</td>
+            <td class="text-right">{{ analytics['stopped_jobs_duration'] }}</td>
+          </tr>
+          <tr>
+            <td>Failed</td>
+            <td class="text-right">{{ analytics['failed_jobs'] }}</td>
+            <td class="text-right">{{ analytics['failed_jobs_rate'] }}%</td>
+            <td class="text-right">{{ analytics['failed_jobs_median'] }}</td>
+            <td class="text-right">{{ analytics['failed_jobs_mean'] }}</td>
+            <td class="text-right">{{ analytics['failed_jobs_std_dev'] }}</td>
+            <td class="text-right">{{ analytics['failed_jobs_min'] }}</td>
+            <td class="text-right">{{ analytics['failed_jobs_max'] }}</td>
+            <td class="text-right">{{ analytics['failed_jobs_duration'] }}</td>
+          </tr>
+          <tr>
+            <td>All</td>
+            <td class="text-right">{{ analytics['all_jobs'] }}</td>
+            <td class="text-right">100.00%</td>
+            <td class="text-right">{{ analytics['all_jobs_median'] }}</td>
+            <td class="text-right">{{ analytics['all_jobs_mean'] }}</td>
+            <td class="text-right">{{ analytics['all_jobs_std_dev'] }}</td>
+            <td class="text-right">{{ analytics['all_jobs_min'] }}</td>
+            <td class="text-right">{{ analytics['all_jobs_max'] }}</td>
+            <td class="text-right">{{ analytics['all_jobs_duration'] }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-md-12 text-center">
+      <a class="btn btn-outline-primary d-flex justify-content-center" href="{{ url_for('insights') }}">Check for Updates</a>
+    </div>
+  </div>
+{% endblock %}
