@@ -40,7 +40,7 @@ def jobs():
         elif sort_by == 'name':
             jobs = models.PlugJob.query.join(models.PlugConfig).order_by(models.PlugConfig.name.desc())
         elif sort_by == 'status':
-            jobs = models.PlugJob.query.order_by(models.PlugJob.status.desc())
+            jobs = models.PlugJob.query.order_by(models.PlugJob.status)
         elif sort_by == 'start_time':
             jobs = models.PlugJob.query.order_by(models.PlugJob.start_time.desc())
         elif sort_by == 'end_time':
@@ -50,6 +50,9 @@ def jobs():
 
         sort_by = sort_by.replace('_', ' ')
         sort_by = ' '.join([word.capitalize() for word in sort_by.split(' ')])
+
+        if current_user.settings.only_show_active:
+            jobs = jobs.filter(models.PlugJob.q_is_active)
 
         jobs = jobs.paginate(page=page, per_page=10)
         configs = models.PlugConfig.query.order_by(models.PlugConfig.name)
@@ -134,6 +137,14 @@ def next_job_sort():
 
     sort_by = current_user.settings.get_sort_by()
     current_user.settings.sort_by = get_next_sort_by(sort_by)
+    db.session.commit()
+    return redirect(url_for('jobs'))
+
+
+@app.route('/toggle-only-show-active')
+@login_required
+def toggle_only_show_active():
+    current_user.settings.only_show_active = not current_user.settings.only_show_active
     db.session.commit()
     return redirect(url_for('jobs'))
 

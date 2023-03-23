@@ -8,6 +8,7 @@ in a database and their relationships.
 
 '''
 from flask_login import UserMixin
+from sqlalchemy.ext.hybrid import hybrid_property
 
 from datetime import datetime
 from enum import Enum
@@ -78,6 +79,7 @@ class UserSettings(db.Model, Table):
     user = db.relationship('User', backref=db.backref('settings', lazy=True, uselist=False))
     __table_args__ = (db.UniqueConstraint('user_id', name='user_id'),)
     sort_by = db.Column(db.Enum(SortByEnum), nullable=False, default=SortByEnum.start_time)
+    only_show_active = db.Column(db.Boolean, nullable=False, default=True)
 
     def __init__(self, user_id):
         self.user_id = user_id
@@ -170,6 +172,10 @@ class PlugJob(db.Model, Table):
     def is_active(self):
         return self.status == StatusEnum.started
 
+    @hybrid_property
+    def q_is_active(self):
+        return self.status == StatusEnum.started
+
     def json(self):
         return {
             'id': self.id,
@@ -187,12 +193,20 @@ class PlugJob(db.Model, Table):
         return cls.query.filter_by(config_id=config_id).all()
 
     @classmethod
+    def query_active(cls):
+        return cls.query.filter_by(status=StatusEnum.started)
+
+    @classmethod
     def get_active(cls):
-        return cls.query.filter_by(status=StatusEnum.started).all()
+        return cls.query_active().all()
+
+    @classmethod
+    def query_inactive(cls):
+        return cls.query.filter(cls.status != StatusEnum.started)
 
     @classmethod
     def get_inactive(cls):
-        return cls.query.filter(cls.status.in_([StatusEnum.stopped, StatusEnum.finished, StatusEnum.failed])).all()
+        return cls.query_inactive().all()
 
     @classmethod
     def get_started(cls):
