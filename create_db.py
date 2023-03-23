@@ -80,9 +80,9 @@ def create_db():
             name='Test Key',
             user_id=1
         )
+        api_key.key = 'demo'
         db.session.add(api_key)
         db.session.commit()
-        print('Created test API key: {}'.format(api_key.key))
 
 
 if __name__ == '__main__':

@@ -322,6 +322,18 @@ def about():
     return render_template('pages/about.html', title='About', page='about')
 
 
+@app.route('/api/key', methods=['GET', 'POST'])
+@login_required
+def api_key():
+    key = models.APIKey.query.filter_by(user_id=current_user.id).first()
+    if key:
+        key.delete()
+    key = models.APIKey(name='', user_id=current_user.id)
+    key.save()
+    flash(f'Generated a new API key: {key.key}! Save this someplace safe!', 'success')
+    return redirect(url_for('account'))
+
+
 @app.route('/api/active', methods=['GET', 'POST'])
 @security.api_key_required
 def api_active():

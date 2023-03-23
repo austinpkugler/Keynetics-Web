@@ -185,10 +185,11 @@ class PlugJob(db.Model, Table):
 
 class APIKey(db.Model, Table):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), nullable=False, unique=True)
+    # name = db.Column(db.String(64), nullable=False, unique=True)
     key = db.Column(db.String(64), nullable=False, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship('User', backref=db.backref('api_keys', lazy=True))
+    __table_args__ = (db.UniqueConstraint('user_id', name='user_id'),)
 
     def __init__(self, name, user_id):
         self.name = name
@@ -206,9 +207,9 @@ class APIKey(db.Model, Table):
             'user_id': self.user_id
         }
 
-    @classmethod
-    def get_by_name(cls, name):
-        return cls.query.filter_by(name=name).first()
+    # @classmethod
+    # def get_by_name(cls, name):
+    #     return cls.query.filter_by(name=name).first()
 
     @classmethod
     def get_by_key(cls, key):
