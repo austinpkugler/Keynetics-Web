@@ -390,16 +390,23 @@ def create_durations_plot():
     all = models.PlugJob.query.filter(models.PlugJob.duration.isnot(None)).order_by(models.PlugJob.end_time).limit(100).all()
     end_times = [job.end_time.strftime('%H:%M:%S') for job in all]
     durations = [job.duration for job in all]
+    status = [job.status for job in all]
 
     fig = Figure()
     axis = fig.add_subplot(1, 1, 1)
     axis.bar(end_times, durations)
+    for i, s in enumerate(status):
+        if s == models.StatusEnum.failed:
+            axis.patches[i].set_facecolor('red')
+        elif s == models.StatusEnum.stopped:
+            axis.patches[i].set_facecolor('orange')
+        elif s == models.StatusEnum.finished:
+            axis.patches[i].set_facecolor('green')
     axis.set_title('Duration of Last 100 Completed Jobs')
     axis.set_xlabel('End Time')
     axis.set_ylabel('Duration (min)')
     fig.set_size_inches(10, 7.5)
     plt.setp(axis.get_xticklabels(), rotation=45, horizontalalignment='right')
-    # axis.set_xlim([end_times[0], end_times[-1]])
     return fig
 
 
