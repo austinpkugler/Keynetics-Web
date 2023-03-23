@@ -14,6 +14,7 @@ from matplotlib.figure import Figure
 from datetime import datetime
 import io
 from statistics import stdev, mean, median
+import os
 
 from app import app, db, bcrypt, models, forms
 from . import security
@@ -372,7 +373,8 @@ def account():
 @app.route('/docs')
 @login_required
 def docs():
-    return render_template('pages/docs.html', title='docs', page='docs')
+    app_url = os.environ.get('APP_URL', 'http://localhost:5000')
+    return render_template('pages/docs.html', title='docs', page='docs', app_url=app_url)
 
 
 @app.route('/about')

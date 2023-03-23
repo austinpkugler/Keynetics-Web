@@ -12,8 +12,7 @@ def test_api_active_get():
     json = {
         'api_key': 'demo'
     }
-    response = requests.get(APP_URL + 'api/active', json=json)
-    print(response)
+    response = requests.get(APP_URL + '/api/active', json=json)
     print(response.json())
 
 
@@ -23,7 +22,8 @@ def test_api_active_post():
         'id': 1,
         'status': 'failed',
     }
-    response = requests.post(APP_URL + 'api/active', json=status_update)
+    response = requests.post(APP_URL + '/api/active', json=status_update)
+    print(response.json())
 
 
 if __name__ == '__main__':

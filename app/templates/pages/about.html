@@ -5,34 +5,22 @@
 
   <p class="lead"><a class="text-light" href="https://github.com/pres1751" target="_blank">Zach Preston</a></p>
   <p>
-    Zach is a senior majoring in computer science at the University of Idaho.
-  </p>
-  <p>
-    Zach is the team's Glorius Leader and is responsible for coordinating with team mentors, designing the project's architecture, and writing software for the project's robot, Fred.
+    Zach is a senior majoring in computer science at the University of Idaho. He is the team's Glorius Leader and is responsible for coordinating with team mentors, designing the project's architecture, and writing software for the project's robot, Fred.
   </p>
 
   <p class="lead"><a class="text-light" href="https://www.linkedin.com/in/austin-kugler" target="_blank">Austin Kugler</a></p>
   <p>
-    Austin is a senior majoring in computer science at the University of Idaho. His interests include backend, fintech, edtech, and distributed systems. Most recently, he worked as a software development engineer at Amazon Web Services (AWS) in the Amazon Connect organization. Austin's work experience covers system design, fullstack development, decentralized applications, data visualization, distributed systems, and higher education.
-  </p>
-  <p>
-    On the Keynetics team, Austin is responsible for fullstack development of the KeyAssembler web app. He also works with team members to design and implement an architecture for dispensing and curing resin using a 6-axis robot.
+    Austin is a senior majoring in computer science at the University of Idaho. On the Keynetics team, Austin is responsible for fullstack development of the KeyAssembler web app. He also works with team members to design and implement an architecture for dispensing and curing resin using a 6-axis robot.
   </p>
 
   <p class="lead"><a class="text-light" href="https://www.linkedin.com/in/taylor-martin-261542222" target="_blank">Taylor Martin</a></p>
   <p>
-    Taylor is a senior majoring in computer science at the University of Idaho.
-  </p>
-  <p>
-    As part of the Keynetics team, Taylor develops the KeyAssembler web app. He also works on the project's overall architecture and writes software for the team's robot, Fred.
+    Taylor is a senior majoring in computer science at the University of Idaho. As part of the Keynetics team, Taylor develops the KeyAssembler web app. He also works on the project's overall architecture and writes software for the team's robot, Fred.
   </p>
 
   <p class="lead"><a class="text-light" href="https://www.linkedin.com/in/john-myers-49638416b" target="_blank">John Myers</a></p>
   <p>
-    John is a senior majoring in mechanical engineering at the University of Idaho.
-  </p>
-  <p>
-    John's role on the Keynetics team is to design and fabricate physical components used in the project. This includes a plug pallet system, baseplate aligner, and mounts for ultraviolet floodlights.
+    John is a senior majoring in mechanical engineering at the University of Idaho. John's role on the Keynetics team is to design and fabricate physical components used in the project. This includes a plug pallet system, baseplate aligner, and mounts for ultraviolet floodlights.
   </p>
 
   <p class="lead text-light">Fred</p>
@@ -45,11 +33,38 @@
 
   <h2 class="mt-3">Background</h2>
   <p class="lead text-light">Existing Method</p>
-
-
-  <h2 class="mt-3">The KeyAssembler</h2>
-  <p class="lead text-light">Robotics Component</p>
-  <p class="lead text-light">Web App Component</p>
+  <p>
+    Before Fred came to save the day, employees manually inserted plastic tabs into each desired plug slot, breaking them off from a molded hexagonal connector. This process was time consuming, boring, repetitive, straining on the hands, and prone to human error.
+  </p>
 
   <h2 class="mt-3">Value Proposition</h2>
+  <p>
+    We replace the manual process with an automated system that automates a boring and repetitive task, prevents strain on employee hands, removes the need for molded parts, and eliminates human error. We do this with the help of Fred, a 6-axis robot that dispenses and cures resin in the desired plug slots. We also provide a web app that allows nontechnical users to control and update the process.
+  </p>
+
+  <h2 class="mt-3">The KeyAssembler</h2>
+  <p class="lead text-light">Process</p>
+  <p>
+    <ol>
+      <li>Employee loads plug trays with new plugs.</li>
+      <li>Employee creates a plug config on the web app.</li>
+      <li>Employee starts a new plug job on the web app.</li>
+      <li>Web app publishes the job to an application programmable interface (API).</li>
+      <li>Robot gets information about the job by visiting the API using the Internet.</li>
+      <li>Robot dispenses resin for the desired plug configuration.</li>
+      <li>Robot uses UV lights to cure the resin.</li>
+      <li>Robot sends a message to the web app API telling it the job status.</li>
+      <li>Employee sees the job is done and replaces the plugs with a new batch.</li>
+    </ol>
+  <p>
+
+  <p class="lead text-light">Web App Component</p>
+  <p>
+    The web app component is what you are looking at right now. It is a web app that allows nontechnical users to create plug configurations and start plug jobs. It also allows users to see status updates, read documentation, view insights, and more.
+  </p>
+
+  <p class="lead text-light">Robotics Component</p>
+  <p>
+    The robotics component consists of a 6-axis robot that dispenses and cures resin in the desired plug slots, base plate aligner that ensures consistent placement, and plug tray that holds plugs. It is controlled by the web app component.
+  </p>
 {% endblock %}
