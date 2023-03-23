@@ -112,6 +112,7 @@ class PlugConfig(db.Model, Table):
     vertical_gap = db.Column(db.Float, nullable=False)
     slot_gap = db.Column(db.Float, nullable=False)
     notes = db.Column(db.String(256), nullable=True)
+    is_removed = db.Column(db.Boolean, nullable=False, default=False)
 
     def __init__(self, name, cure_profile, horizontal_offset, vertical_offset, horizontal_gap, vertical_gap, slot_gap, notes=''):
         self.name = name
@@ -136,12 +137,21 @@ class PlugConfig(db.Model, Table):
             'horizontal_gap': self.horizontal_gap,
             'vertical_gap': self.vertical_gap,
             'slot_gap': self.slot_gap,
-            'notes': self.notes
+            'notes': self.notes,
+            'is_removed': self.is_removed
         }
 
     @classmethod
     def get_by_name(cls, name):
         return cls.query.filter_by(name=name).first()
+
+    @classmethod
+    def query_not_removed(cls):
+        return cls.query.filter_by(is_removed=False).order_by(cls.name)
+
+    def remove(self):
+        self.is_removed = True
+        db.session.commit()
 
 
 class StatusEnum(Enum):
@@ -173,7 +183,7 @@ class PlugJob(db.Model, Table):
         return self.status == StatusEnum.started
 
     @hybrid_property
-    def q_is_active(self):
+    def query_is_active(self):
         return self.status == StatusEnum.started
 
     def json(self):

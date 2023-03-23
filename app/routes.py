@@ -53,7 +53,7 @@ def jobs():
         sort_by = ' '.join([word.capitalize() for word in sort_by.split(' ')])
 
         if current_user.settings.only_show_active:
-            jobs = jobs.filter(models.PlugJob.q_is_active)
+            jobs = jobs.filter(models.PlugJob.query_is_active)
 
         jobs = jobs.paginate(page=page, per_page=10)
         configs = models.PlugConfig.query.order_by(models.PlugConfig.name)
@@ -169,7 +169,7 @@ def configs():
         config.save()
         flash(f'Added {config.name}!', 'success')
         return redirect(url_for('configs'))
-    configs = models.PlugConfig.query.order_by(models.PlugConfig.name).paginate(page=page, per_page=5)
+    configs = models.PlugConfig.query_not_removed().paginate(page=page, per_page=5)
     return render_template('pages/configs.html', title='Configs', page='configs', form=form, configs=configs)
 
 
@@ -205,9 +205,12 @@ def view_config(config_id):
 @login_required
 def edit_config(config_id):
     config = models.PlugConfig.get_by_id(config_id)
+    if config.is_removed:
+        flash(f'Config {config.name} has been removed!', 'danger')
+        return redirect(url_for('configs'))
+
     form = forms.PlugConfigForm()
     if form.validate_on_submit():
-        # Check if the name is already taken
         if form.name.data != config.name:
             existing_config = models.PlugConfig.get_by_name(form.name.data)
             if existing_config:
@@ -260,12 +263,12 @@ def copy_config(config_id):
     return redirect(url_for('configs'))
 
 
-@app.route('/delete-config/<int:config_id>', methods=['GET', 'POST'])
+@app.route('/remove-config/<int:config_id>', methods=['GET', 'POST'])
 @login_required
-def delete_config(config_id):
+def remove_config(config_id):
     config = models.PlugConfig.get_by_id(config_id)
-    config.delete()
-    flash(f'Deleted {config.name}!', 'success')
+    config.remove()
+    flash(f'Removed {config.name}!', 'success')
     return redirect(url_for('configs'))
 
 

@@ -36,5 +36,13 @@
       <td scope="col">Notes</td>
       <td scope="col">{{ config.notes }}</td>
     </tr>
+    <tr>
+      <td scope="col">Removed</td>
+      {% if config.removed == 0 %}
+        <td scope="col">No</td>
+      {% else %}
+        <td scope="col">Yes</td>
+      {% endif %}
+    </tr>
   </tbody>
 </table>
