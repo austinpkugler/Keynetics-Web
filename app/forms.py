@@ -74,10 +74,10 @@ class PlugConfigForm(FlaskForm):
     def __repr__(cls):
         return f'PlugConfigForm(name={cls.name.data}, cure_profile={cls.cure_profile.data})'
 
-    def validate_name(self, name):
-        config = models.PlugConfig.query.filter_by(name=name.data).first()
-        if config is not None:
-            raise ValidationError(f'The name "{name.data}" is already in use!')
+    # def validate_name(self, name):
+    #     config = models.PlugConfig.query.filter_by(name=name.data).first()
+    #     if config is not None:
+    #         raise ValidationError(f'The name "{name.data}" is already in use!')
 
 
 class PlugJobForm(FlaskForm):

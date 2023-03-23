@@ -206,6 +206,13 @@ def edit_config(config_id):
     config = models.PlugConfig.get_by_id(config_id)
     form = forms.PlugConfigForm()
     if form.validate_on_submit():
+        # Check if the name is already taken
+        if form.name.data != config.name:
+            existing_config = models.PlugConfig.get_by_name(form.name.data)
+            if existing_config:
+                flash(f'Config with name {form.name.data} already exists!', 'danger')
+                return redirect(url_for('edit_config', config_id=config_id))
+
         config.name = form.name.data
         config.cure_profile = form.cure_profile.data
         config.horizontal_offset = form.horizontal_offset.data
