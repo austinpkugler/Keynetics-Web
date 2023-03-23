@@ -9,7 +9,9 @@ in a database and their relationships.
 '''
 from flask_login import UserMixin
 
+from datetime import datetime
 from enum import Enum
+import uuid
 
 from app import db, login_manager
 
@@ -19,7 +21,26 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-class User(db.Model, UserMixin):
+class Table():
+
+    @classmethod
+    def get_all(cls):
+        return cls.query.all()
+
+    @classmethod
+    def get_by_id(cls, id):
+        return cls.query.get(id)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+
+class User(db.Model, UserMixin, Table):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(64), nullable=False, unique=True)
     password = db.Column(db.String(32), nullable=False)
@@ -31,14 +52,18 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return f'User(id={self.id}, email={self.email})'
 
-    def to_dict(self):
+    def json(self):
         return {
             'id': self.id,
             'email': self.email
         }
 
+    @classmethod
+    def get_by_email(cls, email):
+        return cls.query.filter_by(email=email).first()
 
-class PlugConfig(db.Model):
+
+class PlugConfig(db.Model, Table):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(32), nullable=False, unique=True)
     cure_profile = db.Column(db.String(32), nullable=False)
@@ -62,7 +87,7 @@ class PlugConfig(db.Model):
     def __repr__(self):
         return f'PlugConfig(id={self.id}, name={self.name}, cure_profile={self.cure_profile})'
 
-    def to_dict(self):
+    def json(self):
         return {
             'id': self.id,
             'name': self.name,
@@ -75,6 +100,10 @@ class PlugConfig(db.Model):
             'notes': self.notes
         }
 
+    @classmethod
+    def get_by_name(cls, name):
+        return cls.query.filter_by(name=name).first()
+
 
 class StatusEnum(Enum):
     started = 'started'
@@ -83,7 +112,7 @@ class StatusEnum(Enum):
     failed = 'failed'
 
 
-class PlugJob(db.Model):
+class PlugJob(db.Model, Table):
     id = db.Column(db.Integer, primary_key=True)
     config_id = db.Column(db.Integer, db.ForeignKey('plug_config.id'), nullable=False)
     config = db.relationship('PlugConfig', backref=db.backref('jobs', lazy=True))
@@ -104,7 +133,7 @@ class PlugJob(db.Model):
     def is_active(self):
         return self.status == StatusEnum.started
 
-    def to_dict(self):
+    def json(self):
         return {
             'id': self.id,
             'config_id': self.config_id,
@@ -113,5 +142,75 @@ class PlugJob(db.Model):
             'end_time': self.end_time,
             'duration': self.duration,
             'notes': self.notes,
-            'config': self.config.to_dict()
+            'config': self.config.json()
         }
+
+    @classmethod
+    def get_by_config(cls, config_id):
+        return cls.query.filter_by(config_id=config_id).all()
+
+    @classmethod
+    def get_active(cls):
+        return cls.query.filter_by(status=StatusEnum.started).all()
+
+    @classmethod
+    def get_inactive(cls):
+        return cls.query.filter(cls.status.in_([StatusEnum.stopped, StatusEnum.finished, StatusEnum.failed])).all()
+
+    @classmethod
+    def get_started(cls):
+        return cls.query.filter_by(status=StatusEnum.started).all()
+
+    @classmethod
+    def get_stopped(cls):
+        return cls.query.filter_by(status=StatusEnum.stopped).all()
+
+    @classmethod
+    def get_finished(cls):
+        return cls.query.filter_by(status=StatusEnum.finished).all()
+
+    @classmethod
+    def get_failed(cls):
+        return cls.query.filter_by(status=StatusEnum.failed).all()
+
+    def stop(self):
+        self.status = StatusEnum.stopped
+        self.end_time = datetime.now()
+        self.duration = (self.end_time - self.start_time).total_seconds()
+        db.session.commit()
+
+
+class APIKey(db.Model, Table):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), nullable=False, unique=True)
+    key = db.Column(db.String(64), nullable=False, unique=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user = db.relationship('User', backref=db.backref('api_keys', lazy=True))
+
+    def __init__(self, name, user_id):
+        self.name = name
+        self.user_id = user_id
+        self.key = str(uuid.uuid4())
+
+    def __repr__(self):
+        return f'APIKey(id={self.id}, name={self.name}, user_id={self.user_id})'
+
+    def json(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'key': self.key,
+            'user_id': self.user_id
+        }
+
+    @classmethod
+    def get_by_name(cls, name):
+        return cls.query.filter_by(name=name).first()
+
+    @classmethod
+    def get_by_key(cls, key):
+        return cls.query.filter_by(key=key).first()
+
+    @classmethod
+    def get_by_user(cls, user_id):
+        return cls.query.filter_by(user_id=user_id).all()

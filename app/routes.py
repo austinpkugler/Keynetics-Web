@@ -23,7 +23,7 @@ def jobs():
     if not current_user.is_authenticated:
         form = forms.UserSignInForm()
         if form.validate_on_submit():
-            user = models.User.query.filter_by(email=form.email.data).first()
+            user = models.User.get_by_email(form.email.data)
             if user is None or not bcrypt.check_password_hash(user.password, form.password.data):
                 flash('Invalid email or password', 'danger')
                 return redirect(url_for('jobs'))
@@ -40,14 +40,14 @@ def jobs():
 @app.route('/job/<int:job_id>', methods=['GET', 'POST'])
 @login_required
 def view_job(job_id):
-    job = models.PlugJob.query.get(job_id)
+    job = models.PlugJob.get_by_id(job_id)
     return render_template('pages/view_job.html', title=f'Job #{job.id}', page='jobs', job=job, config=job.config)
 
 
 @app.route('/add-job-notes/<int:job_id>', methods=['GET', 'POST'])
 @login_required
 def edit_job(job_id):
-    job = models.PlugJob.query.get(job_id)
+    job = models.PlugJob.get_by_id(job_id)
     form = forms.PlugJobForm()
     if form.validate_on_submit():
         job.notes = form.notes.data
@@ -63,14 +63,13 @@ def edit_job(job_id):
 @login_required
 def start_job():
     config_id = request.form.get('config_select')
-    config = models.PlugConfig.query.get(config_id)
-    job = models.PlugJob.query.filter_by(status=models.StatusEnum.started).first()
-    if job:
-        flash(f'A job for {job.config.name} is active!', 'danger')
+    config = models.PlugConfig.get_by_id(config_id)
+    active_jobs = models.PlugJob.get_active()
+    if active_jobs:
+        flash(f'A job for {active_jobs[0].config.name} is active!', 'danger')
         return redirect(url_for('jobs'))
     job = models.PlugJob(config_id=config_id, start_time=datetime.now())
-    db.session.add(job)
-    db.session.commit()
+    job.save()
     flash(f'Started job for {config.name}!', 'success')
     return redirect(url_for('jobs'))
 
@@ -78,14 +77,11 @@ def start_job():
 @app.route('/stop-job/<int:job_id>', methods=['GET', 'POST'])
 @login_required
 def stop_job(job_id):
-    job = models.PlugJob.query.get(job_id)
+    job = models.PlugJob.get_by_id(job_id)
     if not job.is_active():
         flash(f'Job for {job.config.name} already stopped!', 'danger')
         return redirect(url_for('jobs'))
-    job.status = models.StatusEnum.stopped
-    job.end_time = datetime.now()
-    job.duration = round((job.end_time - job.start_time).total_seconds() / 60, 2)
-    db.session.commit()
+    job.stop()
     flash(f'Stopped job for {job.config.name}!', 'success')
     return redirect(url_for('jobs'))
 
@@ -93,13 +89,9 @@ def stop_job(job_id):
 @app.route('/stop-all-jobs', methods=['GET', 'POST'])
 @login_required
 def stop_all_jobs():
-    jobs = models.PlugJob.query.all()
+    jobs = models.PlugJob.get_active()
     for job in jobs:
-        if job.is_active():
-            job.status = models.StatusEnum.stopped
-            job.end_time = datetime.now()
-            job.duration = round((job.end_time - job.start_time).total_seconds() / 60, 2)
-    db.session.commit()
+        job.stop()
     flash(f'Stopped all jobs!', 'success')
     return redirect(url_for('jobs'))
 
@@ -120,8 +112,7 @@ def configs():
             slot_gap=form.slot_gap.data,
             notes=form.notes.data
         )
-        db.session.add(config)
-        db.session.commit()
+        config.save()
         flash(f'Added {config.name}!', 'success')
         return redirect(url_for('configs'))
     configs = models.PlugConfig.query.order_by(models.PlugConfig.name).paginate(page=page, per_page=5)
@@ -143,8 +134,7 @@ def create_config():
             slot_gap=form.slot_gap.data,
             notes=form.notes.data
         )
-        db.session.add(config)
-        db.session.commit()
+        config.save()
         flash(f'Added {config.name}!', 'success')
         return redirect(url_for('configs'))
     return render_template('pages/create_config.html', title=f'Create Config', page='configs', form=form)
@@ -153,14 +143,14 @@ def create_config():
 @app.route('/config/<int:config_id>', methods=['GET', 'POST'])
 @login_required
 def view_config(config_id):
-    config = models.PlugConfig.query.get(config_id)
+    config = models.PlugConfig.get_by_id(config_id)
     return render_template('pages/view_config.html', title=f'{config.name}', page='configs', config=config)
 
 
 @app.route('/edit-config/<int:config_id>', methods=['GET', 'POST'])
 @login_required
 def edit_config(config_id):
-    config = models.PlugConfig.query.get(config_id)
+    config = models.PlugConfig.get_by_id(config_id)
     form = forms.PlugConfigForm()
     if form.validate_on_submit():
         config.name = form.name.data
@@ -189,7 +179,7 @@ def edit_config(config_id):
 @app.route('/copy-config/<int:config_id>', methods=['GET', 'POST'])
 @login_required
 def copy_config(config_id):
-    config = models.PlugConfig.query.get(config_id)
+    config = models.PlugConfig.get_by_id(config_id)
     if models.PlugConfig.query.filter_by(name=f'{config.name} (copy)').first():
         flash(f'Copy of {config.name} already exists! Please rename it first.', 'danger')
         return redirect(url_for('configs'))
@@ -204,8 +194,7 @@ def copy_config(config_id):
         slot_gap=config.slot_gap,
         notes=config.notes
     )
-    db.session.add(new_config)
-    db.session.commit()
+    new_config.save()
     flash(f'Added {new_config.name}!', 'success')
     return redirect(url_for('configs'))
 
@@ -213,9 +202,8 @@ def copy_config(config_id):
 @app.route('/delete-config/<int:config_id>', methods=['GET', 'POST'])
 @login_required
 def delete_config(config_id):
-    config = models.PlugConfig.query.get(config_id)
-    db.session.delete(config)
-    db.session.commit()
+    config = models.PlugConfig.get_by_id(config_id)
+    config.delete()
     flash(f'Deleted {config.name}!', 'success')
     return redirect(url_for('configs'))
 
@@ -244,11 +232,11 @@ def insights():
     def calc_max_duration(jobs):
         return "{:.2f}".format(max(job.duration for job in jobs if job.duration is not None) if jobs else 0)
 
-    all = models.PlugJob.query.all()
-    started = models.PlugJob.query.filter_by(status=models.StatusEnum.started).all()
-    stopped = models.PlugJob.query.filter_by(status=models.StatusEnum.stopped).all()
-    failed = models.PlugJob.query.filter_by(status=models.StatusEnum.failed).all()
-    finished = models.PlugJob.query.filter_by(status=models.StatusEnum.finished).all()
+    all = models.PlugJob.get_all()
+    started = models.PlugJob.get_started()
+    stopped = models.PlugJob.get_stopped()
+    failed = models.PlugJob.get_failed()
+    finished = models.PlugJob.get_finished()
     analytics = {
         'started_jobs': len(started),
         'stopped_jobs': len(stopped),
@@ -333,7 +321,7 @@ def about():
     return render_template('pages/about.html', title='About', page='about')
 
 
-@app.route('/api/jobs', methods=['GET', 'POST'])
+@app.route('/api/active', methods=['GET', 'POST'])
 def api_jobs():
     if request.method == 'POST':
         data = request.get_json(force=True)
@@ -346,9 +334,8 @@ def api_jobs():
             db.session.commit()
         return {'response': 200}
     elif request.method == 'GET':
-        jobs = models.PlugJob.query.filter_by(status=models.StatusEnum.started).all()
-        jobs = [job.to_dict() for job in jobs]
-        return {'jobs': jobs}
+        active = [job.json() for job in models.PlugJob.get_active()]
+        return {'active': active}
 
 
 @app.route('/durations-plot.png')
@@ -430,7 +417,7 @@ def create_status_plot():
 
 def create_config_plot():
     config_counts = {}
-    for config in models.PlugConfig.query.all():
+    for config in models.PlugConfig.get_all():
         config_counts[config.name] = len(models.PlugJob.query.filter_by(config_id=config.id).all())
     fig = Figure()
     axis = fig.add_subplot(1, 1, 1)
