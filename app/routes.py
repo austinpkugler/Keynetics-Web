@@ -369,10 +369,10 @@ def account():
     return render_template('pages/account.html', title='Account', page='account', email_form=email_form, password_form=password_form)
 
 
-@app.route('/help')
+@app.route('/docs')
 @login_required
-def help():
-    return render_template('pages/help.html', title='Help', page='help')
+def docs():
+    return render_template('pages/docs.html', title='docs', page='docs')
 
 
 @app.route('/about')
