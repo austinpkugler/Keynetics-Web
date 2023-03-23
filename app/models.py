@@ -175,6 +175,9 @@ class PlugJob(db.Model, Table):
 
     def stop(self):
         self.status = StatusEnum.stopped
+        self.end()
+
+    def end(self):
         self.end_time = datetime.now()
         self.duration = (self.end_time - self.start_time).total_seconds()
         db.session.commit()

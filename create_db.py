@@ -75,6 +75,15 @@ def create_db():
             db.session.add(job)
         db.session.commit()
 
+        # Create an API key for testing
+        api_key = models.APIKey(
+            name='Test Key',
+            user_id=1
+        )
+        db.session.add(api_key)
+        db.session.commit()
+        print('Created test API key: {}'.format(api_key.key))
+
 
 if __name__ == '__main__':
     create_db()

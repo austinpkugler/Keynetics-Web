@@ -16,6 +16,7 @@ import io
 from statistics import stdev, mean, median
 
 from app import app, db, bcrypt, models, forms
+from . import security
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -322,20 +323,36 @@ def about():
 
 
 @app.route('/api/active', methods=['GET', 'POST'])
-def api_jobs():
+@security.api_key_required
+def api_active():
     if request.method == 'POST':
         data = request.get_json(force=True)
         job = models.PlugJob.query.filter_by(id=data['id']).first()
         if job:
-            job.status = getattr(models.StatusEnum, data['status'])
-            if job.status == 'Finished' or job.status == 'Failed' or job.status == 'Stopped':
-                job.end_time = datetime.now()
-                job.duration = round((job.end_time - job.start_time).total_seconds() / 60, 2)
-            db.session.commit()
-        return {'response': 200}
+            if data['status'] == 'finished' or data['status'] == 'failed' or data['status'] == 'stopped':
+                job.end()
+                job.status = getattr(models.StatusEnum, data['status'])
+                db.session.commit()
+        return {'response': 200}, 200
     elif request.method == 'GET':
         active = [job.json() for job in models.PlugJob.get_active()]
-        return {'active': active}
+        return {'response': 200, 'data': active}, 200
+
+
+@app.route('/api/jobs', methods=['GET', 'POST'])
+@security.api_key_required
+def api_jobs():
+    if request.method == 'GET':
+        jobs = [job.json() for job in models.PlugJob.get_all()]
+        return {'response': 200, 'data': jobs}, 200
+
+
+@app.route('/api/configs', methods=['GET', 'POST'])
+@security.api_key_required
+def api_configs():
+    if request.method == 'GET':
+        configs = [config.json() for config in models.PlugConfig.get_all()]
+        return {'response': 200, 'data': configs}, 200
 
 
 @app.route('/durations-plot.png')
