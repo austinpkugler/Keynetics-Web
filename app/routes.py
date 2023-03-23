@@ -33,9 +33,27 @@ def jobs():
         return render_template('base.html', form=form)
     else:
         page = request.args.get('page', 1, type=int)
-        jobs = models.PlugJob.query.order_by(models.PlugJob.start_time.desc()).paginate(page=page, per_page=10)
+
+        sort_by = current_user.settings.get_sort_by()
+        if sort_by == 'id':
+            jobs = models.PlugJob.query.order_by(models.PlugJob.id.desc())
+        elif sort_by == 'name':
+            jobs = models.PlugJob.query.join(models.PlugConfig).order_by(models.PlugConfig.name.desc())
+        elif sort_by == 'status':
+            jobs = models.PlugJob.query.order_by(models.PlugJob.status.desc())
+        elif sort_by == 'start_time':
+            jobs = models.PlugJob.query.order_by(models.PlugJob.start_time.desc())
+        elif sort_by == 'end_time':
+            jobs = models.PlugJob.query.order_by(models.PlugJob.end_time.desc())
+        elif sort_by == 'duration':
+            jobs = models.PlugJob.query.order_by(models.PlugJob.duration.desc())
+
+        sort_by = sort_by.replace('_', ' ')
+        sort_by = ' '.join([word.capitalize() for word in sort_by.split(' ')])
+
+        jobs = jobs.paginate(page=page, per_page=10)
         configs = models.PlugConfig.query.order_by(models.PlugConfig.name)
-        return render_template('pages/jobs.html', title='Jobs', page='jobs', configs=configs, jobs=jobs)
+        return render_template('pages/jobs.html', title='Jobs', page='jobs', configs=configs, jobs=jobs, sort_by=sort_by)
 
 
 @app.route('/job/<int:job_id>', methods=['GET', 'POST'])
@@ -94,6 +112,29 @@ def stop_all_jobs():
     for job in jobs:
         job.stop()
     flash(f'Stopped all jobs!', 'success')
+    return redirect(url_for('jobs'))
+
+
+@app.route('/next-job-sort')
+@login_required
+def next_job_sort():
+    def get_next_sort_by(sort_by):
+        if sort_by == 'id':
+            return 'name'
+        elif sort_by == 'name':
+            return 'status'
+        elif sort_by == 'status':
+            return 'start_time'
+        elif sort_by == 'start_time':
+            return 'end_time'
+        elif sort_by == 'end_time':
+            return 'duration'
+        elif sort_by == 'duration':
+            return 'id'
+
+    sort_by = current_user.settings.get_sort_by()
+    current_user.settings.sort_by = get_next_sort_by(sort_by)
+    db.session.commit()
     return redirect(url_for('jobs'))
 
 

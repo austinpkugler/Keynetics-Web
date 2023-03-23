@@ -5,8 +5,11 @@
   {% include 'forms/email.html' %}
   {% include 'forms/password.html' %}
   <form class="form-inline" method="POST" action="{{ url_for('api_key') }}">
-    <div class="form-group">
-      <button type="submit" class="btn btn-outline-primary">Generate API Key</button>
-    </div>
+    <fieldset class="form-group">
+      <legend>API Access</legend>
+      <div class="form-group">
+        <button type="submit" class="btn btn-outline-primary">Generate API Key</button>
+      </div>
+    </fieldset>
   </form>
 {% endblock %}

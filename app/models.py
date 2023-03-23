@@ -63,6 +63,43 @@ class User(db.Model, UserMixin, Table):
         return cls.query.filter_by(email=email).first()
 
 
+class SortByEnum(Enum):
+    id = 'id'
+    name = 'name'
+    status = 'status'
+    start_time = 'start_time'
+    end_time = 'end_time'
+    duration = 'duration'
+
+
+class UserSettings(db.Model, Table):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user = db.relationship('User', backref=db.backref('settings', lazy=True, uselist=False))
+    __table_args__ = (db.UniqueConstraint('user_id', name='user_id'),)
+    sort_by = db.Column(db.Enum(SortByEnum), nullable=False, default=SortByEnum.start_time)
+
+    def __init__(self, user_id):
+        self.user_id = user_id
+
+    def __repr__(self):
+        return f'UserSettings(id={self.id}, user_id={self.user_id}, sort_by={self.sort_by})'
+
+    def json(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'sort_by': self.sort_by
+        }
+
+    @classmethod
+    def get_by_user_id(cls, user_id):
+        return cls.query.filter_by(user_id=user_id).first()
+
+    def get_sort_by(self):
+        return self.sort_by.value
+
+
 class PlugConfig(db.Model, Table):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(32), nullable=False, unique=True)
@@ -185,11 +222,10 @@ class PlugJob(db.Model, Table):
 
 class APIKey(db.Model, Table):
     id = db.Column(db.Integer, primary_key=True)
-    # name = db.Column(db.String(64), nullable=False, unique=True)
-    key = db.Column(db.String(64), nullable=False, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship('User', backref=db.backref('api_keys', lazy=True))
     __table_args__ = (db.UniqueConstraint('user_id', name='user_id'),)
+    key = db.Column(db.String(64), nullable=False, unique=True)
 
     def __init__(self, name, user_id):
         self.name = name
@@ -206,10 +242,6 @@ class APIKey(db.Model, Table):
             'key': self.key,
             'user_id': self.user_id
         }
-
-    # @classmethod
-    # def get_by_name(cls, name):
-    #     return cls.query.filter_by(name=name).first()
 
     @classmethod
     def get_by_key(cls, key):

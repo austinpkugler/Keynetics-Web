@@ -30,6 +30,10 @@ def create_db():
             )
             db.session.add(user)
         db.session.commit()
+        for user in models.User.get_all():
+            settings = models.UserSettings(user_id=user.id)
+            db.session.add(settings)
+        db.session.commit()
 
         # PlugConfig test data
         for i in range(4, 8):
