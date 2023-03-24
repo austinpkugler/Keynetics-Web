@@ -33,3 +33,47 @@ Run Web App Locally:
 ```
 python3 run.py
 ```
+
+# Deploy to Heroku
+* Create Heroku account and add a payment method.
+* Subscribe to a Dyno plan
+* Navigate to repo root directory.
+* Install Heroku CLI and login:
+```
+curl https://cli-assets.heroku.com/install.sh | sh
+heroku login
+```
+* Verify `requirements.txt` includes `psycopg2`.
+
+* Verify `Profile` file is in repo root directory. If not, create it:
+```
+echo "web: gunicorn app:app" > Procfile
+```
+* Verify `requirements.txt` includes `gunicorn`, install it if not present.
+```
+pip install gunicorn
+pip freeze > requirements.txt
+```
+* Verify all changes are added, committed, and pushed.
+* Create and push the Heroku project:
+```
+heroku create
+git push heroku main
+```
+* Create database:
+```
+heroku addons:create heroku-postgresql:mini
+```
+This will subscribe you to the Heroku Postgres Mini database add-on.
+* Verify project's `DATABASE_URL`, `APP_URL`, `EMAIL`, and `FLASK_SECRET_KEY` config vars are set to the correct values in the "Settings" tab of the Heroku dashboard. The `DATABASE_URL` value should match the output of:
+```
+heroku config:get DATABASE_URL
+```
+* Add dynos to the project:
+```
+heroku ps:scale web=1
+```
+* Open the hosted project:
+```
+heroku open
+```
