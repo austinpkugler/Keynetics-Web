@@ -245,10 +245,10 @@ class PlugJob(db.Model, Table):
 
 
 class APIKey(db.Model, Table):
+    __table_args__ = (db.UniqueConstraint('user_id', name='user_id'),)
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship('User', backref=db.backref('api_keys', lazy=True))
-    __table_args__ = (db.UniqueConstraint('user_id', name='user_id'),)
     key = db.Column(db.String(64), nullable=False, unique=True)
 
     def __init__(self, name, user_id):
