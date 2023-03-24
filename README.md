@@ -46,7 +46,7 @@ python3 run.py
 curl https://cli-assets.heroku.com/install.sh | sh
 heroku login
 ```
-* Verify `requirements.txt` includes `psycopg2`.
+* Verify `requirements.txt` includes `psycopg2`. You may need to remove `psycopg2-binary==2.9.5` and redeploy if you encounter relevant errors.
 
 * Verify `Profile` file is in repo root directory. If not, create it:
 ```
