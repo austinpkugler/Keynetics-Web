@@ -43,8 +43,8 @@ class Table():
 
 class User(db.Model, UserMixin, Table):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(64), nullable=False, unique=True)
-    password = db.Column(db.String(32), nullable=False)
+    email = db.Column(db.String(128), nullable=False, unique=True)
+    password = db.Column(db.String(256), nullable=False)
 
     def __init__(self, email, password):
         self.email = email
