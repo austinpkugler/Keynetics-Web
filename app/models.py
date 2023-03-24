@@ -43,12 +43,14 @@ class Table():
 
 class User(db.Model, UserMixin, Table):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(128), nullable=False, unique=True)
+    email = db.Column(db.String(256), nullable=False, unique=True)
     password = db.Column(db.String(256), nullable=False)
+    settings = db.relationship('UserSettings', backref='user', uselist=False)
 
-    def __init__(self, email, password):
+    def __init__(self, email, password, settings):
         self.email = email
         self.password = password
+        self.settings = settings
 
     def __repr__(self):
         return f'User(id={self.id}, email={self.email})'
@@ -76,13 +78,12 @@ class SortByEnum(Enum):
 class UserSettings(db.Model, Table):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    user = db.relationship('User', backref=db.backref('settings', lazy=True, uselist=False))
-    __table_args__ = (db.UniqueConstraint('user_id', name='user_id'),)
-    sort_by = db.Column(db.Enum(SortByEnum), nullable=False, default=SortByEnum.start_time)
-    only_show_active = db.Column(db.Boolean, nullable=False, default=True)
+    sort_by = db.Column(db.Enum(SortByEnum), nullable=False)
+    only_show_active = db.Column(db.Boolean, nullable=False)
 
-    def __init__(self, user_id):
-        self.user_id = user_id
+    def __init__(self, sort_by=SortByEnum.start_time, only_show_active=True):
+        self.sort_by = sort_by
+        self.only_show_active = only_show_active
 
     def __repr__(self):
         return f'UserSettings(id={self.id}, user_id={self.user_id}, sort_by={self.sort_by})'
@@ -165,15 +166,16 @@ class PlugJob(db.Model, Table):
     id = db.Column(db.Integer, primary_key=True)
     config_id = db.Column(db.Integer, db.ForeignKey('plug_config.id'), nullable=False)
     config = db.relationship('PlugConfig', backref=db.backref('jobs', lazy=True))
-    status = db.Column(db.Enum(StatusEnum), nullable=False, default=StatusEnum.started)
     start_time = db.Column(db.DateTime, nullable=True)
+    status = db.Column(db.Enum(StatusEnum), nullable=False)
+    notes = db.Column(db.String(256), nullable=True)
     end_time = db.Column(db.DateTime, nullable=True)
     duration = db.Column(db.Float, nullable=True)
-    notes = db.Column(db.String(256), nullable=True)
 
-    def __init__(self, config_id, start_time, notes=''):
+    def __init__(self, config_id, start_time, status=StatusEnum.started, notes=''):
         self.config_id = config_id
         self.start_time = start_time
+        self.status = status
         self.notes = notes
 
     def __repr__(self):

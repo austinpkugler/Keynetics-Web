@@ -24,9 +24,12 @@ APP_URL='http://127.0.0.1:5000'
 EMAIL='youremail@email.com'
 PASSWORD='yourpassword'
 ```
-Then, run the below command.
+Then, run the below commands:
 ```
-python3 create_db.py
+python3
+>>> import manage_db
+>>> manage_db.create_dev()
+>>> exit()
 ```
 
 Run Web App Locally:
@@ -64,14 +67,22 @@ git push heroku main
 ```
 heroku addons:create heroku-postgresql:mini
 ```
-This will subscribe you to the Heroku Postgres Mini database add-on.
-* Verify project's `DATABASE_URL`, `APP_URL`, `EMAIL`, and `FLASK_SECRET_KEY` config vars are set to the correct values in the "Settings" tab of the Heroku dashboard. The `DATABASE_URL` value should match the output of:
+This will subscribe you to the Heroku Postgres Mini database add-on. Note: you may need to install psycopg2-binary using the Heroku CLI.
+* Verify project's `DATABASE_URL`, `APP_URL`, `EMAIL`, `PASSWORD`, and `FLASK_SECRET_KEY` config vars are set to the correct values in the "Settings" tab of the Heroku dashboard. The `DATABASE_URL` value should match the output of:
 ```
 heroku config:get DATABASE_URL
 ```
 * Add dynos to the project:
 ```
 heroku ps:scale web=1
+```
+* Create the database with an admin account:
+```
+heroku run python
+>>> import manage_db
+>>> manage_db.create_prod()
+>>> exit()
+```
 ```
 * Open the hosted project:
 ```

@@ -1,7 +1,4 @@
-'''Module for creating the database from scratch.
-
-This should only be run once during setup or in case of database
-deletion. Run the file itself with `python create_db.py`.
+'''Module for manging database operations.
 
 '''
 from datetime import datetime, timedelta
@@ -11,7 +8,19 @@ import random
 from app import app, db, bcrypt, models
 
 
-def create_db():
+def create_prod():
+    with app.app_context():
+        db.create_all()
+
+        admin = models.User(
+            email=os.environ.get('EMAIL'),
+            password=bcrypt.generate_password_hash(os.environ.get('PASSWORD')).decode('utf-8'),
+            settings=models.UserSettings()
+        )
+        admin.save()
+
+
+def create_dev():
     def random_binary_string(n):
         return ''.join(str(random.randint(0, 1)) for _ in range(n))
 
@@ -26,14 +35,10 @@ def create_db():
         for i in range(1, 4):
             user = models.User(
                 email='user{}@email.com'.format(i),
-                password=bcrypt.generate_password_hash('password{}'.format(i)).decode('utf-8')
+                password=bcrypt.generate_password_hash('password{}'.format(i)).decode('utf-8'),
+                settings=models.UserSettings()
             )
-            db.session.add(user)
-        db.session.commit()
-        for user in models.User.get_all():
-            settings = models.UserSettings(user_id=user.id)
-            db.session.add(settings)
-        db.session.commit()
+            user.save()
 
         # PlugConfig test data
         for i in range(4, 8):
@@ -46,23 +51,15 @@ def create_db():
                 vertical_gap=round(random.uniform(0.1, 5), 2),
                 slot_gap=round(random.uniform(0.1, 5), 2)
             )
-            db.session.add(plug)
-        db.session.commit()
+            plug.save()
 
         # PlugJob test data
-        started_job = models.PlugJob(
-            config_id=random.randint(1, 4),
-            start_time=datetime.now() - timedelta(minutes=random.randint(30, 45))
-        )
-        db.session.add(started_job)
-        db.session.commit()
-
         for i in range(100):
             job = models.PlugJob(
                 config_id=random.randint(1, 4),
-                start_time=datetime.now() - timedelta(minutes=random.randint(30, 45))
+                start_time=datetime.now() - timedelta(minutes=random.randint(20, 100))
             )
-            job.end_time = job.start_time + timedelta(minutes=random.randint(5, 30))
+            job.end_time = job.start_time + timedelta(minutes=random.randint(20, 100))
             job.duration = round((job.end_time - job.start_time).total_seconds() / 60, 2)
             status_list = list(models.StatusEnum)
             status_list.remove(models.StatusEnum.started)
@@ -76,18 +73,4 @@ def create_db():
             else:
                 job.status = models.StatusEnum.stopped
 
-            db.session.add(job)
-        db.session.commit()
-
-        # Create an API key for testing
-        api_key = models.APIKey(
-            name='Test Key',
-            user_id=1
-        )
-        api_key.key = 'demo'
-        db.session.add(api_key)
-        db.session.commit()
-
-
-if __name__ == '__main__':
-    create_db()
+            job.save()

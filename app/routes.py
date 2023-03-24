@@ -297,11 +297,16 @@ def insights():
         return "{:.2f}".format(max(job.duration for job in jobs if job.duration is not None) if jobs else 0)
 
     all = models.PlugJob.get_all()
+    if len(all) < 5:
+        return render_template('pages/insights.html', title='Insights', page='insights', analytics={'show': False})
+
     started = models.PlugJob.get_started()
     stopped = models.PlugJob.get_stopped()
     failed = models.PlugJob.get_failed()
     finished = models.PlugJob.get_finished()
     analytics = {
+        'show': True,
+
         'started_jobs': len(started),
         'stopped_jobs': len(stopped),
         'failed_jobs': len(failed),
@@ -467,7 +472,7 @@ def logout():
 
 
 def create_durations_plot():
-    all = models.PlugJob.query.filter(models.PlugJob.duration.isnot(None)).order_by(models.PlugJob.end_time).limit(100).all()
+    all = models.PlugJob.query.filter(models.PlugJob.duration.isnot(None)).order_by(models.PlugJob.end_time).limit(50).all()
     end_times = [job.end_time.strftime('%H:%M:%S') for job in all]
     durations = [job.duration for job in all]
     status = [job.status for job in all]
@@ -482,7 +487,7 @@ def create_durations_plot():
             axis.patches[i].set_facecolor('orange')
         elif s == models.StatusEnum.finished:
             axis.patches[i].set_facecolor('green')
-    axis.set_title('Duration of Last 100 Completed Jobs')
+    axis.set_title(f'Duration of Last {len(durations)} Completed Jobs')
     axis.set_xlabel('End Time')
     axis.set_ylabel('Duration (min)')
     fig.set_size_inches(10, 7.5)
