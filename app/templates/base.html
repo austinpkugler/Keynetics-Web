@@ -18,20 +18,43 @@
 
   <body>
     {% if current_user.is_authenticated %}
-      <div class="row float-right mr-4">
-        <ul class="nav">
-          <li class="nav-item nav-link">
-            <a href="{{ url_for('account') }}" class="text-light">Account</a>
-          </li>
-          <li class="nav-item nav-link">
-            <a href="{{ url_for('logout') }}" class="text-light">Logout</a>
-          </li>
-        </ul>
-      </div>
-    {% endif %}
+        {% if request.MOBILE %}
+          <div class="row">
+            <div class="col-12 text-center">
+              <a href="{{ url_for('account') }}" class="text-light">Account</a>
+              &nbsp
+              <a href="{{ url_for('logout') }}" class="text-light">Logout</a>
+            </div>
+          </div>
+        {% else %}
+          <div class="row float-right mr-4">
+            <ul class="nav">
+              <li class="nav-item nav-link">
+                <a href="{{ url_for('account') }}" class="text-light">Account</a>
+              </li>
+              <li class="nav-item nav-link">
+                <a href="{{ url_for('logout') }}" class="text-light">Logout</a>
+              </li>
+            </ul>
+          </div>
+        {% endif %}
+      {% endif %}
+
     <header class="container">
+      {% if request.MOBILE %}
+        <div class="row">
+          <div class="col-12 text-center">
+            <h1 class="text-center display-6 keynetics-text-mobile">K e y n e t i c s</h1>
+          </div>
+        </div>
+      {% else %}
+        <div class="row">
+          <div class="col-12 text-center">
+            <h1 class="text-center display-4 keynetics-text-mobile">K e y n e t i c s</h1>
+          </div>
+        </div>
+      {% endif %}
       {% if current_user.is_authenticated %}
-        <h1 class="text-center display-4 keynetics-text">K e y n e t i c s</h1>
         <ul class="nav nav-pills nav-justified">
           {% if page == 'jobs' %}
             <li class="nav-item">
@@ -79,8 +102,6 @@
             </li>
           {% endif %}
         </ul>
-      {% else %}
-        <h1 class="text-center display-4 keynetics-text">K e y n e t i c s</h1>
       {% endif %}
     </header>
 

@@ -13,6 +13,8 @@
               {% endfor %}
             </select>
           </div>
+        </div>
+        <div class="form-group">
           <button type="submit" class="btn btn-outline-primary ml-2">Start</button>
         </div>
       </form>
@@ -20,20 +22,20 @@
   </div>
 
   <div class="row mb-2">
-    <div class="col-md-3">
+    <div class="col-md-3 mt-2">
       <a class="btn btn-outline-primary d-flex justify-content-center" href="{{ url_for('jobs') }}">Check for Updates</a>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-3 mt-2">
       <a class="btn btn-outline-primary d-flex justify-content-center" href="{{ url_for('next_job_sort') }}">Sort By: {{ sort_by }}</a>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-3 mt-2">
       {% if current_user.settings.only_show_active %}
       <a class="btn btn-outline-primary d-flex justify-content-center" href="{{ url_for('toggle_only_show_active') }}">Showing Active</a>
       {% else %}
         <a class="btn btn-outline-primary d-flex justify-content-center" href="{{ url_for('toggle_only_show_active') }}">Showing All</a>
       {% endif %}
     </div>
-    <div class="col-md-3">
+    <div class="col-md-3 mt-2">
       <a class="btn btn-outline-danger d-flex justify-content-center" href="{{ url_for('stop_all_jobs') }}">Stop All Jobs</a>
     </div>
   </div>

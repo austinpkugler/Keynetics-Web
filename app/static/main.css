@@ -4,6 +4,13 @@
   margin-top: 0.25em;
 }
 
+.keynetics-text-mobile
+{
+  font-family: 'Helvetica', sans-serif;
+  margin-top: 0.25em;
+  letter-spacing: -0.05em;
+}
+
 body
 {
   background-color: #181a1b;

@@ -209,7 +209,7 @@ status_update = {
   'id': 1,
   'status': 'failed',
 }
-response = requests.post(APP_URL + '/api/active', json=status_update)
+response = requests.post('{{ app_url }}/api/active', json=status_update)
 print(response.json())
       </code>
     </pre>
