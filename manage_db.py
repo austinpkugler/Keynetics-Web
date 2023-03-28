@@ -4,6 +4,7 @@
 from datetime import datetime, timedelta
 import os
 import random
+import getpass
 
 from app import app, db, bcrypt, models
 
@@ -74,3 +75,13 @@ def create_dev():
                 job.status = models.StatusEnum.stopped
 
             job.save()
+
+
+def create_user(email, password):
+    with app.app_context():
+        user = models.User(
+            email=email,
+            password=bcrypt.generate_password_hash(password).decode('utf-8'),
+            settings=models.UserSettings()
+        )
+        user.save()
