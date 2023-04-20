@@ -83,7 +83,6 @@ heroku run python
 >>> manage_db.create_prod()
 >>> exit()
 ```
-```
 * Open the hosted project:
 ```
 heroku open

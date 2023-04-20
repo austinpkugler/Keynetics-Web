@@ -26,10 +26,6 @@ def create_dev():
         return ''.join(str(random.randint(0, 1)) for _ in range(n))
 
     with app.app_context():
-        db_path = os.path.join('instance', os.environ.get('DATABASE_URL').split('///')[1])
-        if os.path.exists(db_path):
-            os.remove(db_path)
-
         db.create_all()
 
         # User test data
@@ -85,3 +81,11 @@ def create_user(email, password):
             settings=models.UserSettings()
         )
         user.save()
+
+
+def delete_all(confirm=False):
+    if confirm:
+        with app.app_context():
+            db.drop_all()
+    else:
+        print(f'Please confirm deletion using boolean: delete_all(confirm=True)')
