@@ -30,9 +30,9 @@
     </div>
     <div class="col-md-3 mt-2">
       {% if current_user.settings.only_show_active %}
-      <a class="btn btn-outline-primary d-flex justify-content-center" href="{{ url_for('toggle_only_show_active') }}">Showing Active</a>
+      <a class="btn btn-outline-primary d-flex justify-content-center" href="{{ url_for('toggle_only_show_active') }}">Showing: Active</a>
       {% else %}
-        <a class="btn btn-outline-primary d-flex justify-content-center" href="{{ url_for('toggle_only_show_active') }}">Showing All</a>
+        <a class="btn btn-outline-primary d-flex justify-content-center" href="{{ url_for('toggle_only_show_active') }}">Showing: All</a>
       {% endif %}
     </div>
     <div class="col-md-3 mt-2">

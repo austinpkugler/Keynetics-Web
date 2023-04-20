@@ -382,7 +382,7 @@ def account():
 @login_required
 def docs():
     app_url = os.environ.get('APP_URL', 'http://localhost:5000')
-    return render_template('pages/docs.html', title='docs', page='docs', app_url=app_url)
+    return render_template('pages/docs.html', title='Docs', page='docs', app_url=app_url)
 
 
 @app.route('/about')
