@@ -104,25 +104,47 @@ class UserSettings(db.Model, Table):
 
 
 class PlugConfig(db.Model, Table):
+    # General
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(32), nullable=False, unique=True)
-    cure_profile = db.Column(db.String(32), nullable=False)
-    horizontal_offset = db.Column(db.Float, nullable=False)
-    vertical_offset = db.Column(db.Float, nullable=False)
-    horizontal_gap = db.Column(db.Float, nullable=False)
-    vertical_gap = db.Column(db.Float, nullable=False)
-    slot_gap = db.Column(db.Float, nullable=False)
     notes = db.Column(db.String(256), nullable=True)
-    is_removed = db.Column(db.Boolean, nullable=False, default=False)
+    cure_profile = db.Column(db.String(32), nullable=False)
+    is_archived = db.Column(db.Boolean, nullable=False, default=False)
 
-    def __init__(self, name, cure_profile, horizontal_offset, vertical_offset, horizontal_gap, vertical_gap, slot_gap, notes=''):
+    # Plug measurements
+    offset_x = db.Column(db.Float, nullable=False)
+    offset_y = db.Column(db.Float, nullable=False)
+    offset_z = db.Column(db.Float, nullable=False)
+    vertical_gap_x = db.Column(db.Float, nullable=False)
+    vertical_gap_y = db.Column(db.Float, nullable=False)
+    vertical_gap_z = db.Column(db.Float, nullable=False)
+    horizontal_gap_x = db.Column(db.Float, nullable=False)
+    horizontal_gap_y = db.Column(db.Float, nullable=False)
+    horizontal_gap_z = db.Column(db.Float, nullable=False)
+    slot_gap_x = db.Column(db.Float, nullable=False)
+    slot_gap_y = db.Column(db.Float, nullable=False)
+    slot_gap_z = db.Column(db.Float, nullable=False)
+
+    def __init__(self, name, cure_profile, offset_x, offset_y, offset_z, vertical_gap_x, vertical_gap_y, vertical_gap_z, horizontal_gap_x, horizontal_gap_y, horizontal_gap_z, slot_gap_x, slot_gap_y, slot_gap_z, notes=''):
+        # General
         self.name = name
         self.cure_profile = cure_profile
-        self.horizontal_offset = horizontal_offset
-        self.vertical_offset = vertical_offset
-        self.horizontal_gap = horizontal_gap
-        self.vertical_gap = vertical_gap
-        self.slot_gap = slot_gap
+
+        # Plug measurements
+        self.offset_x = offset_x
+        self.offset_y = offset_y
+        self.offset_z = offset_z
+        self.vertical_gap_x = vertical_gap_x
+        self.vertical_gap_y = vertical_gap_y
+        self.vertical_gap_z = vertical_gap_z
+        self.horizontal_gap_x = horizontal_gap_x
+        self.horizontal_gap_y = horizontal_gap_y
+        self.horizontal_gap_z = horizontal_gap_z
+        self.slot_gap_x = slot_gap_x
+        self.slot_gap_y = slot_gap_y
+        self.slot_gap_z = slot_gap_z
+
+        # Optional
         self.notes = notes
 
     def __repr__(self):
@@ -132,14 +154,13 @@ class PlugConfig(db.Model, Table):
         return {
             'id': self.id,
             'name': self.name,
-            'cure_profile': self.cure_profile,
-            'horizontal_offset': self.horizontal_offset,
-            'vertical_offset': self.vertical_offset,
-            'horizontal_gap': self.horizontal_gap,
-            'vertical_gap': self.vertical_gap,
-            'slot_gap': self.slot_gap,
             'notes': self.notes,
-            'is_removed': self.is_removed
+            'cure_profile': self.cure_profile,
+            'is_archived': self.is_archived,
+            'offset': [self.offset_x, self.offset_y, self.offset_z],
+            'vertical_gap': [self.vertical_gap_x, self.vertical_gap_y, self.vertical_gap_z],
+            'horizontal_gap': [self.horizontal_gap_x, self.horizontal_gap_y, self.horizontal_gap_z],
+            'slot_gap': [self.slot_gap_x, self.slot_gap_y, self.slot_gap_z]
         }
 
     @classmethod
@@ -147,11 +168,11 @@ class PlugConfig(db.Model, Table):
         return cls.query.filter_by(name=name).first()
 
     @classmethod
-    def query_not_removed(cls):
-        return cls.query.filter_by(is_removed=False).order_by(cls.name)
+    def query_not_archived(cls):
+        return cls.query.filter_by(is_archived=False).order_by(cls.name)
 
-    def remove(self):
-        self.is_removed = True
+    def archive(self):
+        self.is_archived = True
         db.session.commit()
 
 

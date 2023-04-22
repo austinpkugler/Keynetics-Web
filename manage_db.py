@@ -40,13 +40,20 @@ def create_dev():
         # PlugConfig test data
         for i in range(4, 8):
             plug = models.PlugConfig(
-                name='{}-Pin Plug'.format(i),
+                name='Plug Type #{}'.format(i),
                 cure_profile=random_binary_string(i),
-                horizontal_offset=round(random.uniform(0.1, 5), 2),
-                vertical_offset=round(random.uniform(0.1, 5), 2),
-                horizontal_gap=round(random.uniform(0.1, 5), 2),
-                vertical_gap=round(random.uniform(0.1, 5), 2),
-                slot_gap=round(random.uniform(0.1, 5), 2)
+                offset_x=round(random.uniform(0.1, 5), 2),
+                offset_y=round(random.uniform(0.1, 5), 2),
+                offset_z=round(random.uniform(0.1, 5), 2),
+                vertical_gap_x=round(random.uniform(0.1, 5), 2),
+                vertical_gap_y=round(random.uniform(0.1, 5), 2),
+                vertical_gap_z=round(random.uniform(0.1, 5), 2),
+                horizontal_gap_x=round(random.uniform(0.1, 5), 2),
+                horizontal_gap_y=round(random.uniform(0.1, 5), 2),
+                horizontal_gap_z=round(random.uniform(0.1, 5), 2),
+                slot_gap_x=round(random.uniform(0.1, 5), 2),
+                slot_gap_y=round(random.uniform(0.1, 5), 2),
+                slot_gap_z=round(random.uniform(0.1, 5), 2)
             )
             plug.save()
 

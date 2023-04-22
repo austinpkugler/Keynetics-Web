@@ -61,14 +61,28 @@ class UserPasswordForm(FlaskForm):
 
 
 class PlugConfigForm(FlaskForm):
+    # General
     name = StringField('Profile Name', validators=[DataRequired(), Length(min=1, max=32)])
     cure_profile = StringField('Cure Profile', validators=[DataRequired(), Length(min=0, max=32)])
-    horizontal_offset = FloatField('Horizontal Offset', validators=[DataRequired(), NumberRange(min=0, max=99)])
-    vertical_offset = FloatField('Vertical Offset', validators=[DataRequired(), NumberRange(min=0, max=99)])
-    horizontal_gap = FloatField('Horizontal Gap', validators=[DataRequired(), NumberRange(min=0, max=99)])
-    vertical_gap = FloatField('Vertical Gap', validators=[DataRequired(), NumberRange(min=0, max=99)])
-    slot_gap = FloatField('Slot Gap', validators=[DataRequired(), NumberRange(min=0, max=99)])
+
+    # Plug measurements
+    offset_x = FloatField('Offset X', validators=[DataRequired(), NumberRange(min=0, max=99)])
+    offset_y = FloatField('Offset Y', validators=[DataRequired(), NumberRange(min=0, max=99)])
+    offset_z = FloatField('Offset Z', validators=[DataRequired(), NumberRange(min=0, max=99)])
+    vertical_gap_x = FloatField('Vertical Gap X', validators=[DataRequired(), NumberRange(min=0, max=99)])
+    vertical_gap_y = FloatField('Vertical Gap Y', validators=[DataRequired(), NumberRange(min=0, max=99)])
+    vertical_gap_z = FloatField('Vertical Gap Z', validators=[DataRequired(), NumberRange(min=0, max=99)])
+    horizontal_gap_x = FloatField('Horizontal Gap X', validators=[DataRequired(), NumberRange(min=0, max=99)])
+    horizontal_gap_y = FloatField('Horizontal Gap Y', validators=[DataRequired(), NumberRange(min=0, max=99)])
+    horizontal_gap_z = FloatField('Horizontal Gap Z', validators=[DataRequired(), NumberRange(min=0, max=99)])
+    slot_gap_x = FloatField('Slot Gap X', validators=[DataRequired(), NumberRange(min=0, max=99)])
+    slot_gap_y = FloatField('Slot Gap Y', validators=[DataRequired(), NumberRange(min=0, max=99)])
+    slot_gap_z = FloatField('Slot Gap Z', validators=[DataRequired(), NumberRange(min=0, max=99)])
+
+    # Optional
     notes = TextAreaField('Notes', validators=[Length(min=0, max=255)])
+
+    # Submit
     submit = SubmitField('Save')
 
     def __repr__(cls):

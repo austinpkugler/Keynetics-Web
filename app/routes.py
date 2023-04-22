@@ -156,20 +156,11 @@ def configs():
     page = request.args.get('page', 1, type=int)
     form = forms.PlugConfigForm()
     if form.validate_on_submit():
-        config = models.PlugConfig(
-            name=form.name.data,
-            cure_profile=form.cure_profile.data,
-            horizontal_offset=form.horizontal_offset.data,
-            vertical_offset=form.vertical_offset.data,
-            horizontal_gap=form.horizontal_gap.data,
-            vertical_gap=form.vertical_gap.data,
-            slot_gap=form.slot_gap.data,
-            notes=form.notes.data
-        )
+        config = create_config(form)
         config.save()
         flash(f'Added {config.name}!', 'success')
         return redirect(url_for('configs'))
-    configs = models.PlugConfig.query_not_removed().paginate(page=page, per_page=5)
+    configs = models.PlugConfig.query_not_archived().paginate(page=page, per_page=5)
     return render_template('pages/configs.html', title='Configs', page='configs', form=form, configs=configs)
 
 
@@ -178,16 +169,7 @@ def configs():
 def create_config():
     form = forms.PlugConfigForm()
     if form.validate_on_submit():
-        config = models.PlugConfig(
-            name=form.name.data,
-            cure_profile=form.cure_profile.data,
-            horizontal_offset=form.horizontal_offset.data,
-            vertical_offset=form.vertical_offset.data,
-            horizontal_gap=form.horizontal_gap.data,
-            vertical_gap=form.vertical_gap.data,
-            slot_gap=form.slot_gap.data,
-            notes=form.notes.data
-        )
+        config = create_config(form)
         config.save()
         flash(f'Added {config.name}!', 'success')
         return redirect(url_for('configs'))
@@ -205,8 +187,8 @@ def view_config(config_id):
 @login_required
 def edit_config(config_id):
     config = models.PlugConfig.get_by_id(config_id)
-    if config.is_removed:
-        flash(f'Config {config.name} has been removed!', 'danger')
+    if config.is_archived:
+        flash(f'Config {config.name} has been archived!', 'danger')
         return redirect(url_for('configs'))
 
     form = forms.PlugConfigForm()
@@ -219,11 +201,18 @@ def edit_config(config_id):
 
         config.name = form.name.data
         config.cure_profile = form.cure_profile.data
-        config.horizontal_offset = form.horizontal_offset.data
-        config.vertical_offset = form.vertical_offset.data
-        config.horizontal_gap = form.horizontal_gap.data
-        config.vertical_gap = form.vertical_gap.data
-        config.slot_gap = form.slot_gap.data
+        config.offset_x = form.offset_x.data
+        config.offset_y = form.offset_y.data
+        config.offset_z = form.offset_z.data
+        config.vertical_gap_x = form.vertical_gap_x.data
+        config.vertical_gap_y = form.vertical_gap_y.data
+        config.vertical_gap_z = form.vertical_gap_z.data
+        config.horizontal_gap_x = form.horizontal_gap_x.data
+        config.horizontal_gap_y = form.horizontal_gap_y.data
+        config.horizontal_gap_z = form.horizontal_gap_z.data
+        config.slot_gap_x = form.slot_gap_x.data
+        config.slot_gap_y = form.slot_gap_y.data
+        config.slot_gap_z = form.slot_gap_z.data
         config.notes = form.notes.data
         db.session.commit()
         flash(f'Updated {config.name}!', 'success')
@@ -231,11 +220,18 @@ def edit_config(config_id):
     else:
         form.name.data = config.name
         form.cure_profile.data = config.cure_profile
-        form.horizontal_offset.data = config.horizontal_offset
-        form.vertical_offset.data = config.vertical_offset
-        form.horizontal_gap.data = config.horizontal_gap
-        form.vertical_gap.data = config.vertical_gap
-        form.slot_gap.data = config.slot_gap
+        form.offset_x.data = config.offset_x
+        form.offset_y.data = config.offset_y
+        form.offset_z.data = config.offset_z
+        form.vertical_gap_x.data = config.vertical_gap_x
+        form.vertical_gap_y.data = config.vertical_gap_y
+        form.vertical_gap_z.data = config.vertical_gap_z
+        form.horizontal_gap_x.data = config.horizontal_gap_x
+        form.horizontal_gap_y.data = config.horizontal_gap_y
+        form.horizontal_gap_z.data = config.horizontal_gap_z
+        form.slot_gap_x.data = config.slot_gap_x
+        form.slot_gap_y.data = config.slot_gap_y
+        form.slot_gap_z.data = config.slot_gap_z
         form.notes.data = config.notes
     return render_template('pages/edit_config.html', title=f'Edit {config.name}', page='configs', form=form, config=config)
 
@@ -251,11 +247,18 @@ def copy_config(config_id):
     new_config = models.PlugConfig(
         name=f'{config.name} (copy)',
         cure_profile=config.cure_profile,
-        horizontal_offset=config.horizontal_offset,
-        vertical_offset=config.vertical_offset,
-        horizontal_gap=config.horizontal_gap,
-        vertical_gap=config.vertical_gap,
-        slot_gap=config.slot_gap,
+        offset_x=config.offset_x,
+        offset_y=config.offset_y,
+        offset_z=config.offset_z,
+        vertical_gap_x=config.vertical_gap_x,
+        vertical_gap_y=config.vertical_gap_y,
+        vertical_gap_z=config.vertical_gap_z,
+        horizontal_gap_x=config.horizontal_gap_x,
+        horizontal_gap_y=config.horizontal_gap_y,
+        horizontal_gap_z=config.horizontal_gap_z,
+        slot_gap_x=config.slot_gap_x,
+        slot_gap_y=config.slot_gap_y,
+        slot_gap_z=config.slot_gap_z,
         notes=config.notes
     )
     new_config.save()
@@ -263,12 +266,12 @@ def copy_config(config_id):
     return redirect(url_for('configs'))
 
 
-@app.route('/remove-config/<int:config_id>', methods=['GET', 'POST'])
+@app.route('/archive-config/<int:config_id>', methods=['GET', 'POST'])
 @login_required
-def remove_config(config_id):
+def archive_config(config_id):
     config = models.PlugConfig.get_by_id(config_id)
-    config.remove()
-    flash(f'Removed {config.name}!', 'success')
+    config.archive()
+    flash(f'Archived {config.name}!', 'success')
     return redirect(url_for('configs'))
 
 
@@ -524,3 +527,23 @@ def create_config_plot():
     fig.set_size_inches(5, 4)
     fig.subplots_adjust(left=0, right=1, top=0.93, bottom=0.1)
     return fig
+
+
+def create_config(form):
+    return models.PlugConfig(
+        name=form.name.data,
+        cure_profile=form.cure_profile.data,
+        offset_x=form.offset_x.data,
+        offset_y=form.offset_y.data,
+        offset_z=form.offset_z.data,
+        vertical_gap_x=form.vertical_gap_x.data,
+        vertical_gap_y=form.vertical_gap_y.data,
+        vertical_gap_z=form.vertical_gap_z.data,
+        horizontal_gap_x=form.horizontal_gap_x.data,
+        horizontal_gap_y=form.horizontal_gap_y.data,
+        horizontal_gap_z=form.horizontal_gap_z.data,
+        slot_gap_x=form.slot_gap_x.data,
+        slot_gap_y=form.slot_gap_y.data,
+        slot_gap_z=form.slot_gap_z.data,
+        notes=form.notes.data
+    )

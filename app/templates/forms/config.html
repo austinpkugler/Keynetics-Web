@@ -1,8 +1,9 @@
 <form method="POST" action="">
   {{ form.hidden_tag() }}
   <fieldset class="form-group">
+
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-md-3">
         <div class="form-group">
           {{ form.name.label(class="form-control-label") }}
           {% if form.name.errors %}
@@ -17,7 +18,7 @@
           {% endif %}
         </div>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-3">
         <div class="form-group">
           {{ form.cure_profile.label(class="form-control-label") }}
           {% if form.cure_profile.errors %}
@@ -33,83 +34,201 @@
         </div>
       </div>
     </div>
+
     <div class="row">
       <div class="col-md-2">
         <div class="form-group">
-          {{ form.horizontal_offset.label(class="form-control-label") }}
-          {% if form.horizontal_offset.errors %}
-            {{ form.horizontal_offset(class="form-control form-control-sm is-invalid") }}
+          {{ form.offset_x.label(class="form-control-label") }}
+          {% if form.offset_x.errors %}
+            {{ form.offset_x(class="form-control form-control-sm is-invalid") }}
             <div class="invalid-feedback">
-              {% for error in form.horizontal_offset.errors %}
+              {% for error in form.offset_x.errors %}
                 <span>{{ error }}</span>
               {% endfor %}
             </div>
           {% else %}
-            {{ form.horizontal_offset(class="form-control form-control-sm") }}
+            {{ form.offset_x(class="form-control form-control-sm") }}
           {% endif %}
         </div>
       </div>
       <div class="col-md-2">
         <div class="form-group">
-          {{ form.vertical_offset.label(class="form-control-label") }}
-          {% if form.vertical_offset.errors %}
-            {{ form.vertical_offset(class="form-control form-control-sm is-invalid") }}
+          {{ form.offset_y.label(class="form-control-label") }}
+          {% if form.offset_y.errors %}
+            {{ form.offset_y(class="form-control form-control-sm is-invalid") }}
             <div class="invalid-feedback">
-              {% for error in form.vertical_offset.errors %}
+              {% for error in form.offset_y.errors %}
                 <span>{{ error }}</span>
               {% endfor %}
             </div>
           {% else %}
-            {{ form.vertical_offset(class="form-control form-control-sm") }}
+            {{ form.offset_y(class="form-control form-control-sm") }}
           {% endif %}
         </div>
       </div>
       <div class="col-md-2">
         <div class="form-group">
-          {{ form.horizontal_gap.label(class="form-control-label") }}
-          {% if form.horizontal_gap.errors %}
-            {{ form.horizontal_gap(class="form-control form-control-sm is-invalid") }}
+          {{ form.offset_z.label(class="form-control-label") }}
+          {% if form.offset_z.errors %}
+            {{ form.offset_z(class="form-control form-control-sm is-invalid") }}
             <div class="invalid-feedback">
-              {% for error in form.horizontal_gap.errors %}
+              {% for error in form.offset_z.errors %}
                 <span>{{ error }}</span>
               {% endfor %}
             </div>
           {% else %}
-            {{ form.horizontal_gap(class="form-control form-control-sm") }}
+            {{ form.offset_z(class="form-control form-control-sm") }}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-2">
+        <div class="form-group">
+          {{ form.vertical_gap_x.label(class="form-control-label") }}
+          {% if form.vertical_gap_x.errors %}
+            {{ form.vertical_gap_x(class="form-control form-control-sm is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in form.vertical_gap_x.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            {{ form.vertical_gap_x(class="form-control form-control-sm") }}
           {% endif %}
         </div>
       </div>
       <div class="col-md-2">
         <div class="form-group">
-          {{ form.vertical_gap.label(class="form-control-label") }}
-          {% if form.vertical_gap.errors %}
-            {{ form.vertical_gap(class="form-control form-control-sm is-invalid") }}
+          {{ form.vertical_gap_y.label(class="form-control-label") }}
+          {% if form.vertical_gap_y.errors %}
+            {{ form.vertical_gap_y(class="form-control form-control-sm is-invalid") }}
             <div class="invalid-feedback">
-              {% for error in form.vertical_gap.errors %}
+              {% for error in form.vertical_gap_y.errors %}
                 <span>{{ error }}</span>
               {% endfor %}
             </div>
           {% else %}
-            {{ form.vertical_gap(class="form-control form-control-sm") }}
+            {{ form.vertical_gap_y(class="form-control form-control-sm") }}
           {% endif %}
         </div>
       </div>
       <div class="col-md-2">
         <div class="form-group">
-          {{ form.slot_gap.label(class="form-control-label") }}
-          {% if form.slot_gap.errors %}
-            {{ form.slot_gap(class="form-control form-control-sm is-invalid") }}
+          {{ form.vertical_gap_z.label(class="form-control-label") }}
+          {% if form.vertical_gap_z.errors %}
+            {{ form.vertical_gap_z(class="form-control form-control-sm is-invalid") }}
             <div class="invalid-feedback">
-              {% for error in form.slot_gap.errors %}
+              {% for error in form.vertical_gap_z.errors %}
                 <span>{{ error }}</span>
               {% endfor %}
             </div>
           {% else %}
-            {{ form.slot_gap(class="form-control form-control-sm") }}
+            {{ form.vertical_gap_z(class="form-control form-control-sm") }}
           {% endif %}
         </div>
       </div>
-      <div class="col-md-10">
+    </div>
+
+    <div class="row">
+      <div class="col-md-2">
+        <div class="form-group">
+          {{ form.horizontal_gap_x.label(class="form-control-label") }}
+          {% if form.horizontal_gap_x.errors %}
+            {{ form.horizontal_gap_x(class="form-control form-control-sm is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in form.horizontal_gap_x.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            {{ form.horizontal_gap_x(class="form-control form-control-sm") }}
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="form-group">
+          {{ form.horizontal_gap_y.label(class="form-control-label") }}
+          {% if form.horizontal_gap_y.errors %}
+            {{ form.horizontal_gap_y(class="form-control form-control-sm is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in form.horizontal_gap_y.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            {{ form.horizontal_gap_y(class="form-control form-control-sm") }}
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="form-group">
+          {{ form.horizontal_gap_z.label(class="form-control-label") }}
+          {% if form.horizontal_gap_z.errors %}
+            {{ form.horizontal_gap_z(class="form-control form-control-sm is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in form.horizontal_gap_z.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            {{ form.horizontal_gap_z(class="form-control form-control-sm") }}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-2">
+        <div class="form-group">
+          {{ form.slot_gap_x.label(class="form-control-label") }}
+          {% if form.slot_gap_x.errors %}
+            {{ form.slot_gap_x(class="form-control form-control-sm is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in form.slot_gap_x.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            {{ form.slot_gap_x(class="form-control form-control-sm") }}
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="form-group">
+          {{ form.slot_gap_y.label(class="form-control-label") }}
+          {% if form.slot_gap_y.errors %}
+            {{ form.slot_gap_y(class="form-control form-control-sm is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in form.slot_gap_y.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            {{ form.slot_gap_y(class="form-control form-control-sm") }}
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="form-group">
+          {{ form.slot_gap_z.label(class="form-control-label") }}
+          {% if form.slot_gap_z.errors %}
+            {{ form.slot_gap_z(class="form-control form-control-sm is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in form.slot_gap_z.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            {{ form.slot_gap_z(class="form-control form-control-sm") }}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
         {{ form.notes.label(class="form-control-label") }}
         {% if form.notes.errors %}
           {{ form.notes(class="form-control form-control-sm is-invalid") }}
@@ -125,8 +244,9 @@
         {% endif %}
       </div>
     </div>
+
     <div class="row">
-      <div class="col-md-10">
+      <div class="col-md-6">
         <div class="border-top mt-3">
           <small class="text-muted">
             Unsure on what values to input? <a href="{{ url_for('docs') }}">Get Help</a>
@@ -134,5 +254,6 @@
         </div>
       </div>
     </div>
+
   </fieldset>
 </form>
